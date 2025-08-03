@@ -7,9 +7,78 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div class="overlay-text">
     <h1>Welcome to Billions Hub</h1>
-    <p>Explore. Create. Belong.</p>
+    <p class="nav-options">
+      <span onclick="showSection('explore')">Explore</span> ·
+      <span onclick="showSection('create')">Create</span> ·
+      <span onclick="showSection('belong')">Belong</span>
+    </p>
   </div>
+
+  <!-- Explore Section -->
+  <div class="content-section" id="explore">
+    <h2>🧭 Explore</h2>
+    <p>See PFP styles, overlays, featured edits...</p>
+  </div>
+
+  <!-- Create Section -->
+  <div class="content-section" id="create">
+    <h2>🎨 Create</h2>
+    <p>[1] Build your PFP</p>
+
+    <div id="canvas-container">
+      <canvas id="editor-canvas" width="512" height="512"></canvas>
+    </div>
+
+    <label for="upload-image" class="custom-button">Upload Image</label>
+    <input type="file" id="upload-image" accept="image/*" hidden />
+  </div>
+
+  <!-- Belong Section -->
+  <div class="content-section" id="belong">
+    <h2>🌐 Belong</h2>
+    <p>Follow @billions_ntwk, connect your profile, and join the community.</p>
+  </div>
+
+  <!-- JS + Fabric.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script>
+    function showSection(sectionId) {
+      document.querySelectorAll('.content-section').forEach(sec => {
+        sec.style.display = 'none';
+      });
+      document.getElementById(sectionId).style.display = 'block';
+    }
+
+    const canvas = new fabric.Canvas('editor-canvas', {
+      selection: false
+    });
+
+    document.getElementById('upload-image').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (f) {
+        fabric.Image.fromURL(f.target.result, function (img) {
+          canvas.clear();
+          const scale = Math.min(512 / img.width, 512 / img.height);
+          img.scale(scale);
+          img.set({
+            originX: 'center',
+            originY: 'center',
+            left: 256,
+            top: 256,
+            selectable: false
+          });
+          canvas.add(img);
+          canvas.sendToBack(img);
+        }, { crossOrigin: 'anonymous' });
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
 </body>
 </html>
